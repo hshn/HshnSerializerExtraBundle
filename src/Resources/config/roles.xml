@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <service id="hshn.serializer_extra.attribute_manager" class="Hshn\SerializerExtraBundle\Role\AttributeManager" public="false">
+        </service>
+        <service id="hshn.serializer_extra.role_subscriber.def" class="Hshn\SerializerExtraBundle\Role\RoleSubscriber" abstract="true">
+            <argument type="service" id="security.authorization_checker" />
+            <argument type="service" id="hshn.serializer_extra.attribute_manager" />
+        </service>
+    </services>
+</container>
