@@ -26,7 +26,7 @@ class HshnSerializerExtraExtension extends Extension
 
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
 
-        if ($config['roles']) {
+        if (isset($config['roles'])) {
             $this->loadRoles($container, $loader, $config['roles']);
         }
     }

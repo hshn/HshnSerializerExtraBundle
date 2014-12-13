@@ -8,7 +8,9 @@
             "email": "lga0503@gmail.com"
         }
     ],
-    "require": {},
+    "require": {
+        "symfony/framework-bundle": "~2.5"
+    },
     "autoload": {
         "psr-4": { "Hshn\\SerializerExtraBundle\\": "src" }
     },
