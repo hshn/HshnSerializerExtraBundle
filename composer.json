@@ -9,7 +9,10 @@
         }
     ],
     "require": {
-        "symfony/framework-bundle": "~2.5"
+        "symfony/framework-bundle": "~2.6"
+    },
+    "require-dev": {
+        "jms/serializer": "~0.11"
     },
     "autoload": {
         "psr-4": { "Hshn\\SerializerExtraBundle\\": "src" }
