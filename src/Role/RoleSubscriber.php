@@ -48,8 +48,8 @@ class RoleSubscriber implements EventSubscriberInterface
     public function onPostSerialize(ObjectEvent $event)
     {
         $roles = [];
-        foreach ($this->getRoles($event->getType()) as $role) {
-            $roles[$role] = $this->authorizationChecker->isGranted([$role], $event->getObject());
+        foreach ($this->getAttributes($event->getType()) as $attribute) {
+            $roles[$attribute] = $this->authorizationChecker->isGranted($attribute, $event->getObject());
         }
 
         /** @var $visitor JsonSerializationVisitor */
@@ -62,7 +62,7 @@ class RoleSubscriber implements EventSubscriberInterface
      *
      * @return array
      */
-    private function getRoles(array $type)
+    private function getAttributes(array $type)
     {
         try {
             return $this->roleManager->getAttributes($type['name']);
