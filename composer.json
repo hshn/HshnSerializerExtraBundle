@@ -1,0 +1,23 @@
+{
+    "name": "hshn/hshn-serializer-extra-bundle",
+    "description": "This bundle provides some extra features for serialization",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Shota Hoshino",
+            "email": "lga0503@gmail.com"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": { "Hshn\\SerializerExtraBundle\\": "src" }
+    },
+    "autoload-dev": {
+        "psr-4": { "Hshn\\SerializerExtraBundle\\": "tests" }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.x-dev"
+        }
+    }
+}
