@@ -13,7 +13,7 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 /**
  * @author Shota Hoshino <lga0503@gmail.com>
  */
-class RoleSubscriber implements EventSubscriberInterface
+class EventSubscriber implements EventSubscriberInterface
 {
     /**
      * @var AuthorizationCheckerInterface
@@ -21,9 +21,9 @@ class RoleSubscriber implements EventSubscriberInterface
     private $authorizationChecker;
 
     /**
-     * @var AttributeManager
+     * @var ConfigurationRepository
      */
-    private $roleManager;
+    private $configurationRepository;
 
     /**
      * @var string
@@ -32,13 +32,13 @@ class RoleSubscriber implements EventSubscriberInterface
 
     /**
      * @param AuthorizationCheckerInterface $authorizationChecker
-     * @param AttributeManager                   $roleManager
+     * @param ConfigurationRepository       $configurationRepository
      * @param string                        $exportTo
      */
-    public function __construct(AuthorizationCheckerInterface $authorizationChecker, AttributeManager $roleManager, $exportTo = '_roles')
+    public function __construct(AuthorizationCheckerInterface $authorizationChecker, ConfigurationRepository $configurationRepository, $exportTo = '_roles')
     {
         $this->authorizationChecker = $authorizationChecker;
-        $this->roleManager = $roleManager;
+        $this->configurationRepository = $configurationRepository;
         $this->exportTo = $exportTo;
     }
 
@@ -47,29 +47,42 @@ class RoleSubscriber implements EventSubscriberInterface
      */
     public function onPostSerialize(ObjectEvent $event)
     {
+        if (!$configuration = $this->getConfiguration($event->getType())) {
+            return;
+        }
+
+        $maxDepth = $configuration->getMaxDepth();
+        $context = $event->getContext();
+
+        if (-1 !== $maxDepth && $maxDepth < $context->getDepth()) {
+            return;
+        }
+
         $roles = [];
-        foreach ($this->getAttributes($event->getType()) as $attribute) {
+        foreach ($configuration->getAttributes() as $attribute) {
             $roles[$attribute] = $this->authorizationChecker->isGranted($attribute, $event->getObject());
         }
 
-        if (!empty($roles)) {
-            /** @var $visitor JsonSerializationVisitor */
-            $visitor = $event->getContext()->getVisitor();
-            $visitor->addData($this->exportTo, $roles);
+        if (empty($roles)) {
+            return;
         }
+
+        /** @var $visitor JsonSerializationVisitor */
+        $visitor = $context->getVisitor();
+        $visitor->addData($this->exportTo, $roles);
     }
 
     /**
      * @param array $type
      *
-     * @return array
+     * @return Configuration|null
      */
-    private function getAttributes(array $type)
+    private function getConfiguration(array $type)
     {
         try {
-            return $this->roleManager->getAttributes($type['name']);
+            return $this->configurationRepository->get($type['name']);
         } catch (\InvalidArgumentException $e) {
-            return [];
+            return null;
         }
     }
 
