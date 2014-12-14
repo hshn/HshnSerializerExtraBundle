@@ -52,9 +52,11 @@ class RoleSubscriber implements EventSubscriberInterface
             $roles[$attribute] = $this->authorizationChecker->isGranted($attribute, $event->getObject());
         }
 
-        /** @var $visitor JsonSerializationVisitor */
-        $visitor = $event->getContext()->getVisitor();
-        $visitor->addData($this->exportTo, $roles);
+        if (!empty($roles)) {
+            /** @var $visitor JsonSerializationVisitor */
+            $visitor = $event->getContext()->getVisitor();
+            $visitor->addData($this->exportTo, $roles);
+        }
     }
 
     /**
