@@ -36,7 +36,7 @@ class RoleSubscriberTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function testOnPostSerialize()
+    public function testAddRoleStates()
     {
         $event = $this->getMockBuilder('JMS\Serializer\EventDispatcher\ObjectEvent')->disableOriginalConstructor()->getMock();
         $event
@@ -89,13 +89,33 @@ class RoleSubscriberTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return array
+     * @test
      */
-    public function provideOnPostSerializeTests()
+    public function testAddNoRoleStatesUnlessAddAttributes()
     {
-        // [attributes, ]
-        return [
-            []
-        ];
+        $event = $this->getMockBuilder('JMS\Serializer\EventDispatcher\ObjectEvent')->disableOriginalConstructor()->getMock();
+        $event
+            ->expects($this->once())
+            ->method('getType')
+            ->will($this->returnValue(['name' => $type = 'Foo']));
+
+        $this
+            ->roleManager
+            ->expects($this->once())
+            ->method('getAttributes')
+            ->with($type)
+            ->will($this->throwException(new \InvalidArgumentException()));
+
+        $this
+            ->authorizationChecker
+            ->expects($this->never())
+            ->method('isGranted');
+
+        $event
+            ->expects($this->never())
+            ->method('getContext');
+
+        $this->subscriber->onPostSerialize($event);
     }
+
 }
