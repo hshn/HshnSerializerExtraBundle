@@ -1,0 +1,3 @@
+post_show:
+    path:      /post/show
+    defaults:  { _controller: HshnSerializerExtraTestBundle:Post:show }

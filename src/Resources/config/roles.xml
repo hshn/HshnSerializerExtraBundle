@@ -4,8 +4,8 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
-        <service id="hshn.serializer_extra.roles.configuration" class="Hshn\SerializerExtraBundle\Config" abstract="true" public="false" />
-        <service id="hshn.serializer_extra.roles.configuration_repository" class="Hshn\SerializerExtraBundle\Role\AttributeManager" public="false" />
+        <service id="hshn.serializer_extra.roles.configuration" class="Hshn\SerializerExtraBundle\Role\Configuration" abstract="true" public="false" />
+        <service id="hshn.serializer_extra.roles.configuration_repository" class="Hshn\SerializerExtraBundle\Role\ConfigurationRepository" public="false" />
         <service id="hshn.serializer_extra.roles.event_subscriber.def" class="Hshn\SerializerExtraBundle\Role\EventSubscriber" abstract="true">
             <argument type="service" id="security.authorization_checker" />
             <argument type="service" id="hshn.serializer_extra.roles.configuration_repository" />

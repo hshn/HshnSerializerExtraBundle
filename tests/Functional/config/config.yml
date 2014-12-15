@@ -1,6 +1,8 @@
 framework:
     test: ~
     secret: secret
+    router:
+        resource: "%kernel.root_dir%/config/routing.yml"
 
 security:
     providers:
@@ -17,3 +19,16 @@ security:
             pattern:   ^/
             anonymous: ~
             http_basic: ~
+
+hshn_serializer_extra:
+    roles:
+        classes:
+          Hshn\SerializerExtraBundle\Functional\Bundle\Entity\Post:
+              attributes: OWNER
+              max_depth: 1
+
+services:
+    post_voter:
+        class: Hshn\SerializerExtraBundle\Functional\Bundle\Security\Voter\PostVoter
+        tags:
+            - { name: security.voter }
