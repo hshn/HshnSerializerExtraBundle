@@ -12,9 +12,9 @@
         "symfony/framework-bundle": "~2.6"
     },
     "require-dev": {
-        "symfony/security-bundle": "*",
+        "symfony/security-bundle": "~2.6",
         "symfony/browser-kit": "*",
-        "jms/serializer": "~0.11",
+        "jms/serializer": "*",
         "jms/serializer-bundle": "*"
     },
     "autoload": {
