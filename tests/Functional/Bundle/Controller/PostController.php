@@ -18,12 +18,35 @@ class PostController extends Controller
      */
     public function showAction()
     {
-        /** @var $serializer Serializer */
-        $serializer = $this->get('serializer');
-
         $post = new Post('post title');
         $post->setUser(new User('user1'));
 
-        return new Response($serializer->serialize($post, 'json'));
+        return new Response($this->serialize($post));
+    }
+
+    /**
+     * @return Response
+     */
+    public function listAction()
+    {
+        $user = new User('user1');
+        $user->addPost(new Post('post 1'));
+        $user->addPost(new Post('post 2'));
+
+        return new Response($this->serialize($user));
+    }
+
+    /**
+     * @param mixed  $data
+     * @param string $format
+     *
+     * @return mixed
+     */
+    private function serialize($data, $format = 'json')
+    {
+        /** @var $serializer Serializer */
+        $serializer = $this->get('serializer');
+
+        return $serializer->serialize($data, $format);
     }
 }

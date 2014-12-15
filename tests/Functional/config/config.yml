@@ -25,7 +25,7 @@ hshn_serializer_extra:
         classes:
           Hshn\SerializerExtraBundle\Functional\Bundle\Entity\Post:
               attributes: OWNER
-              max_depth: 1
+              max_depth: 0
 
 services:
     post_voter:
