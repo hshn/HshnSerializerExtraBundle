@@ -32,7 +32,7 @@ class HshnSerializerExtraExtensionTest extends \PHPUnit_Framework_TestCase
     {
         $this->extension->load([], $this->container);
 
-        $this->assertFalse($this->container->hasDefinition('hshn.serializer_extra.roles.event_subscriber'));
+        $this->assertFalse($this->container->hasDefinition('hshn.serializer_extra.authority.event_subscriber'));
     }
 
     /**
@@ -42,7 +42,7 @@ class HshnSerializerExtraExtensionTest extends \PHPUnit_Framework_TestCase
     {
         $this->extension->load([
             'hshn_serializer_extra' => [
-                'roles' => [
+                'authority' => [
                     'classes' => [
                         'Foo' => ['attributes' => 'ROLE_A'],
                         'Bar' => ['attributes' => ['ROLE_A', 'ROLE_B']],
@@ -51,11 +51,11 @@ class HshnSerializerExtraExtensionTest extends \PHPUnit_Framework_TestCase
             ]
         ], $this->container);
 
-        $this->assertTrue($this->container->hasDefinition('hshn.serializer_extra.roles.event_subscriber'));
-        $definition = $this->container->getDefinition('hshn.serializer_extra.roles.event_subscriber');
-        $this->assertEquals('_roles', $definition->getArgument(0));
+        $this->assertTrue($this->container->hasDefinition('hshn.serializer_extra.authority.event_subscriber'));
+        $definition = $this->container->getDefinition('hshn.serializer_extra.authority.event_subscriber');
+        $this->assertEquals('_authority', $definition->getArgument(0));
 
-        $definition = $this->container->getDefinition('hshn.serializer_extra.roles.configuration_repository');
+        $definition = $this->container->getDefinition('hshn.serializer_extra.authority.configuration_repository');
 
         $methodCalls = $definition->getMethodCalls();
         $this->assertMethodCall($methodCalls[0], 'set', ['Foo', $this->isInstanceOf('Symfony\Component\DependencyInjection\Reference')]);
@@ -69,15 +69,15 @@ class HshnSerializerExtraExtensionTest extends \PHPUnit_Framework_TestCase
     {
         $this->extension->load([
             'hshn_serializer_extra' => [
-                'roles' => [
-                    'export_to' => 'my_roles',
+                'authority' => [
+                    'export_to' => 'my_authority',
                 ]
             ]
         ], $this->container);
 
-        $this->assertTrue($this->container->hasDefinition('hshn.serializer_extra.roles.event_subscriber'));
-        $definition = $this->container->getDefinition('hshn.serializer_extra.roles.event_subscriber');
-        $this->assertEquals('my_roles', $definition->getArgument(0));
+        $this->assertTrue($this->container->hasDefinition('hshn.serializer_extra.authority.event_subscriber'));
+        $definition = $this->container->getDefinition('hshn.serializer_extra.authority.event_subscriber');
+        $this->assertEquals('my_authority', $definition->getArgument(0));
     }
 
     /**

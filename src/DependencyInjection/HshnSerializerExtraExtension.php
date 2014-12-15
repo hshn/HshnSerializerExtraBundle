@@ -27,8 +27,8 @@ class HshnSerializerExtraExtension extends Extension
 
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
 
-        if (isset($config['roles'])) {
-            $this->loadRoles($container, $loader, $config['roles']);
+        if (isset($config['authority'])) {
+            $this->loadAuthority($container, $loader, $config['authority']);
         }
     }
 
@@ -37,14 +37,14 @@ class HshnSerializerExtraExtension extends Extension
      * @param LoaderInterface  $loader
      * @param array            $config
      */
-    private function loadRoles(ContainerBuilder $container, LoaderInterface $loader, array $config)
+    private function loadAuthority(ContainerBuilder $container, LoaderInterface $loader, array $config)
     {
-        $loader->load('roles.xml');
+        $loader->load('authority.xml');
 
-        $repository = $container->getDefinition('hshn.serializer_extra.roles.configuration_repository');
+        $repository = $container->getDefinition('hshn.serializer_extra.authority.configuration_repository');
         foreach ($config['classes'] as $class => $vars) {
-            $id = sprintf('hshn.serializer_extra.roles.configuration.%s', md5($class));
-            $container->setDefinition($id, $definition = new DefinitionDecorator('hshn.serializer_extra.roles.configuration'));
+            $id = sprintf('hshn.serializer_extra.authority.configuration.%s', md5($class));
+            $container->setDefinition($id, $definition = new DefinitionDecorator('hshn.serializer_extra.authority.configuration'));
 
             $definition
                 ->addArgument($vars['attributes'])
@@ -53,10 +53,10 @@ class HshnSerializerExtraExtension extends Extension
             $repository->addMethodCall('set', [$class, new Reference($id)]);
         }
 
-        $roleSubscriber = new DefinitionDecorator('hshn.serializer_extra.roles.event_subscriber.def');
+        $roleSubscriber = new DefinitionDecorator('hshn.serializer_extra.authority.event_subscriber.def');
         $roleSubscriber->addArgument($config['export_to']);
         $roleSubscriber->addTag('jms_serializer.event_subscriber');
 
-        $container->setDefinition('hshn.serializer_extra.roles.event_subscriber', $roleSubscriber);
+        $container->setDefinition('hshn.serializer_extra.authority.event_subscriber', $roleSubscriber);
     }
 }

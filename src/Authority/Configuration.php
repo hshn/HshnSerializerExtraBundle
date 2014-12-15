@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Hshn\SerializerExtraBundle\Role;
+namespace Hshn\SerializerExtraBundle\Authority;
 
 
 /**

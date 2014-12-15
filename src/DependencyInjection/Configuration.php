@@ -22,9 +22,9 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->arrayNode('roles')
+                ->arrayNode('authority')
                     ->children()
-                        ->scalarNode('export_to')->defaultValue('_roles')->cannotBeEmpty()->end()
+                        ->scalarNode('export_to')->defaultValue('_authority')->cannotBeEmpty()->end()
                         ->arrayNode('classes')
                             ->useAttributeAsKey('class')
                             ->prototype('array')

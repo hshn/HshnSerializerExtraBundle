@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Hshn\SerializerExtraBundle\Role;
+namespace Hshn\SerializerExtraBundle\Authority;
 
 
 
@@ -29,7 +29,7 @@ class EventSubscriberTest extends \PHPUnit_Framework_TestCase
     {
         $this->subscriber = new EventSubscriber(
             $this->authorizationChecker = $this->getMock('Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface'),
-            $this->configurationRepository = $this->getMockBuilder('Hshn\SerializerExtraBundle\Role\ConfigurationRepository')->getMock()
+            $this->configurationRepository = $this->getMockBuilder('Hshn\SerializerExtraBundle\Authority\ConfigurationRepository')->getMock()
         );
     }
 
@@ -54,7 +54,7 @@ class EventSubscriberTest extends \PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('get')
             ->with($type)
-            ->will($this->returnValue($config = $this->getMock('Hshn\SerializerExtraBundle\Role\Configuration')));
+            ->will($this->returnValue($config = $this->getMock('Hshn\SerializerExtraBundle\Authority\Configuration')));
 
         $config
             ->expects($this->once())
@@ -144,7 +144,7 @@ class EventSubscriberTest extends \PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('get')
             ->with($type)
-            ->will($this->returnValue($config = $this->getMock('Hshn\SerializerExtraBundle\Role\Configuration')));
+            ->will($this->returnValue($config = $this->getMock('Hshn\SerializerExtraBundle\Authority\Configuration')));
 
         $config
             ->expects($this->once())

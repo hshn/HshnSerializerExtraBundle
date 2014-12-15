@@ -25,7 +25,7 @@ class AuthorityTest extends WebTestCase
         $this->assertEquals($response::HTTP_OK, $response->getStatusCode());
 
         $post = json_decode($response->getContent(), true);
-        $this->assertEquals($expectedAuthorities, $post['_roles']);
+        $this->assertEquals($expectedAuthorities, $post['_authority']);
     }
 
     /**
@@ -55,7 +55,7 @@ class AuthorityTest extends WebTestCase
         $this->assertArrayHasKey('posts', $user);
         $this->assertCount(2, $user['posts']);
         foreach ($user['posts'] as $post) {
-            $this->assertArrayNotHasKey('_roles', $post);
+            $this->assertArrayNotHasKey('_authority', $post);
         }
     }
 }

@@ -21,7 +21,7 @@ security:
             http_basic: ~
 
 hshn_serializer_extra:
-    roles:
+    authority:
         classes:
           Hshn\SerializerExtraBundle\Functional\Bundle\Entity\Post:
               attributes: OWNER
