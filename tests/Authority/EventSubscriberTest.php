@@ -1,17 +1,17 @@
 <?php
 
 
-namespace Hshn\SerializerExtraBundle\Role;
+namespace Hshn\SerializerExtraBundle\Authority;
 
 
 
 /**
  * @author Shota Hoshino <lga0503@gmail.com>
  */
-class RoleSubscriberTest extends \PHPUnit_Framework_TestCase
+class EventSubscriberTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var RoleSubscriber
+     * @var EventSubscriber
      */
     private $subscriber;
 
@@ -23,13 +23,13 @@ class RoleSubscriberTest extends \PHPUnit_Framework_TestCase
     /**
      * @var \PHPUnit_Framework_MockObject_MockObject
      */
-    private $roleManager;
+    private $configurationRepository;
 
     protected function setUp()
     {
-        $this->subscriber = new RoleSubscriber(
+        $this->subscriber = new EventSubscriber(
             $this->authorizationChecker = $this->getMock('Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface'),
-            $this->roleManager = $this->getMockBuilder('Hshn\SerializerExtraBundle\Role\AttributeManager')->getMock()
+            $this->configurationRepository = $this->getMockBuilder('Hshn\SerializerExtraBundle\Authority\ConfigurationRepository')->getMock()
         );
     }
 
@@ -50,11 +50,21 @@ class RoleSubscriberTest extends \PHPUnit_Framework_TestCase
         ];
 
         $this
-            ->roleManager
+            ->configurationRepository
+            ->expects($this->once())
+            ->method('get')
+            ->with($type)
+            ->will($this->returnValue($config = $this->getMock('Hshn\SerializerExtraBundle\Authority\Configuration')));
+
+        $config
             ->expects($this->once())
             ->method('getAttributes')
-            ->with($type)
             ->will($this->returnValue(array_keys($roles)));
+
+        $config
+            ->expects($this->once())
+            ->method('getMaxDepth')
+            ->will($this->returnValue(-1));
 
         $event
             ->expects($this->any())
@@ -100,9 +110,9 @@ class RoleSubscriberTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue(['name' => $type = 'Foo']));
 
         $this
-            ->roleManager
+            ->configurationRepository
             ->expects($this->once())
-            ->method('getAttributes')
+            ->method('get')
             ->with($type)
             ->will($this->throwException(new \InvalidArgumentException()));
 
@@ -118,4 +128,45 @@ class RoleSubscriberTest extends \PHPUnit_Framework_TestCase
         $this->subscriber->onPostSerialize($event);
     }
 
+    /**
+     * @test
+     */
+    public function testAddNoRoleStatesWhenReachedMaxDepth()
+    {
+        $event = $this->getMockBuilder('JMS\Serializer\EventDispatcher\ObjectEvent')->disableOriginalConstructor()->getMock();
+        $event
+            ->expects($this->once())
+            ->method('getType')
+            ->will($this->returnValue(['name' => $type = 'Foo']));
+
+        $this
+            ->configurationRepository
+            ->expects($this->once())
+            ->method('get')
+            ->with($type)
+            ->will($this->returnValue($config = $this->getMock('Hshn\SerializerExtraBundle\Authority\Configuration')));
+
+        $config
+            ->expects($this->once())
+            ->method('getMaxDepth')
+            ->will($this->returnValue(1));
+
+
+        $event
+            ->expects($this->once())
+            ->method('getContext')
+            ->will($this->returnValue($context = $this->getMock('JMS\Serializer\Context')));
+
+        $context
+            ->expects($this->once())
+            ->method('getDepth')
+            ->will($this->returnValue(2));
+
+        $this
+            ->authorizationChecker
+            ->expects($this->never())
+            ->method('isGranted');;
+
+        $this->subscriber->onPostSerialize($event);
+    }
 }

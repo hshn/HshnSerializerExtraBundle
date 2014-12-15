@@ -1,0 +1,7 @@
+post_show:
+    path:      /post/show
+    defaults:  { _controller: HshnSerializerExtraTestBundle:Post:show }
+
+post_list:
+    path:      /post/list
+    defaults:  { _controller: HshnSerializerExtraTestBundle:Post:list }
