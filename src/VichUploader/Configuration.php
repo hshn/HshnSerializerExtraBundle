@@ -33,8 +33,8 @@ class Configuration
         $this->attributes = [];
         $this->maxDepth = $maxDepth;
 
-        foreach ($attributes as $attribute => $alias) {
-            $this->setAttribute($attributes, $alias);
+        foreach ($attributes as $attribute => $vars) {
+            $this->setAttribute($attribute, $vars['alias']);
         }
     }
 

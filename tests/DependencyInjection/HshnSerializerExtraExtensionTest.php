@@ -3,6 +3,7 @@
 namespace Hshn\SerializerExtraBundle\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Reference;
 
 /**
  * @author Shota Hoshino <lga0503@gmail.com>
@@ -30,7 +31,7 @@ class HshnSerializerExtraExtensionTest extends \PHPUnit_Framework_TestCase
      */
     public function testWithoutConfigs()
     {
-        $this->extension->load([], $this->container);
+        $this->loadExtension([]);
 
         $this->assertFalse($this->container->hasDefinition('hshn.serializer_extra.authority.event_subscriber'));
     }
@@ -38,18 +39,16 @@ class HshnSerializerExtraExtensionTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function testRoleConfigs()
+    public function testAuthorityConfigs()
     {
-        $this->extension->load([
-            'hshn_serializer_extra' => [
-                'authority' => [
-                    'classes' => [
-                        'Foo' => ['attributes' => 'ROLE_A'],
-                        'Bar' => ['attributes' => ['ROLE_A', 'ROLE_B']],
-                    ]
+        $this->loadExtension([
+            'authority' => [
+                'classes' => [
+                    'Foo' => ['attributes' => 'ROLE_A'],
+                    'Bar' => ['attributes' => ['ROLE_A', 'ROLE_B']],
                 ]
             ]
-        ], $this->container);
+        ]);
 
         $this->assertTrue($this->container->hasDefinition('hshn.serializer_extra.authority.event_subscriber'));
         $definition = $this->container->getDefinition('hshn.serializer_extra.authority.event_subscriber');
@@ -65,19 +64,52 @@ class HshnSerializerExtraExtensionTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function testOverridingRoleConfigs()
+    public function testOverridingAuthorityConfigs()
     {
-        $this->extension->load([
-            'hshn_serializer_extra' => [
-                'authority' => [
-                    'export_to' => 'my_authority',
-                ]
+        $this->loadExtension([
+            'authority' => [
+                'export_to' => 'my_authority',
             ]
-        ], $this->container);
+        ]);
 
         $this->assertTrue($this->container->hasDefinition('hshn.serializer_extra.authority.event_subscriber'));
         $definition = $this->container->getDefinition('hshn.serializer_extra.authority.event_subscriber');
         $this->assertEquals('my_authority', $definition->getArgument(0));
+    }
+
+    /**
+     * @test
+     */
+    public function testVichUploaderConfigs()
+    {
+        $this->loadExtension([
+            'vich_uploader' => [
+                'classes' => [
+                    'MyClass_A' => [
+                        'attributes' => [
+                            'foo' => 'bar',
+                            'name' => null,
+                        ],
+                        'max_depth' => 1,
+                    ],
+                    'MyClass_B' => null,
+                ],
+            ]
+        ]);
+
+        $this->container->hasDefinition('hshn.serializer_extra.vich_uploader.configuration_repository');
+        $definition = $this->container->getDefinition('hshn.serializer_extra.vich_uploader.configuration_repository');
+        $this->assertCount(2, $definition->getArgument(0));
+    }
+
+    /**
+     * @param array $config
+     */
+    private function loadExtension(array $config)
+    {
+        $this->extension->load([
+            'hshn_serializer_extra' => $config
+        ], $this->container);
     }
 
     /**

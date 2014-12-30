@@ -31,6 +31,10 @@ class HshnSerializerExtraExtension extends Extension
         if (isset($config['authority'])) {
             $this->loadAuthority($container, $loader, $config['authority']);
         }
+
+        if (isset($config['vich_uploader'])) {
+            $this->loadVichUploader($container, $loader, $config['vich_uploader']);
+        }
     }
 
     /**
@@ -59,5 +63,29 @@ class HshnSerializerExtraExtension extends Extension
         $roleSubscriber->addTag('jms_serializer.event_subscriber');
 
         $container->setDefinition('hshn.serializer_extra.authority.event_subscriber', $roleSubscriber);
+    }
+
+    /**
+     * @param ContainerBuilder $container
+     * @param LoaderInterface  $loader
+     * @param array            $config
+     */
+    private function loadVichUploader(ContainerBuilder $container, LoaderInterface $loader, array $config)
+    {
+        $loader->load('vich_uploader.xml');
+
+        $configurations = [];
+        foreach ($config['classes'] as $class => $vars) {
+            $id = sprintf('hshn.serializer_extra.vich_uploader.configuration.%s', md5($class));
+            $container->setDefinition($id, $definition = new DefinitionDecorator('hshn.serializer_extra.vich_uploader.configuration'));
+            $definition
+                ->addArgument($class)
+                ->addArgument($vars['attributes'])
+                ->addArgument($vars['max_depth']);
+
+            $configurations[] = new Reference($id);
+        }
+
+        $container->getDefinition('hshn.serializer_extra.vich_uploader.configuration_repository')->addArgument($configurations);
     }
 }
