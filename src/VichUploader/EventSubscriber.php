@@ -2,9 +2,9 @@
 
 namespace Hshn\SerializerExtraBundle\VichUploader;
 
+use Hshn\SerializerExtraBundle\AbstractContextAwareEventSubscriber;
 use Hshn\SerializerExtraBundle\ContextMatcher\MatcherFactory;
 use JMS\Serializer\EventDispatcher\Events;
-use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\EventDispatcher\ObjectEvent;
 use JMS\Serializer\JsonSerializationVisitor;
 use Vich\UploaderBundle\Mapping\PropertyMapping;
@@ -14,7 +14,7 @@ use Vich\UploaderBundle\Storage\StorageInterface;
 /**
  * @author Shota Hoshino <lga0503@gmail.com>
  */
-class EventSubscriber implements EventSubscriberInterface
+class EventSubscriber extends AbstractContextAwareEventSubscriber
 {
     /**
      * {@inheritdoc}
@@ -25,11 +25,6 @@ class EventSubscriber implements EventSubscriberInterface
             ['event' => Events::POST_SERIALIZE, 'method' => 'onPostSerialize', 'format' => 'json'],
         ];
     }
-
-    /**
-     * @var MatcherFactory
-     */
-    private $matcherFactory;
 
     /**
      * @var PropertyMappingFactory
@@ -54,7 +49,8 @@ class EventSubscriber implements EventSubscriberInterface
      */
     public function __construct(MatcherFactory $matcherFactory, PropertyMappingFactory $propertyMappingFactory, StorageInterface $storage, ConfigurationRepository $configurationRepository)
     {
-        $this->matcherFactory = $matcherFactory;
+        parent::__construct($matcherFactory);
+
         $this->propertyMappingFactory = $propertyMappingFactory;
         $this->storage = $storage;
         $this->configurationRepository = $configurationRepository;

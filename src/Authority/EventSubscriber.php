@@ -3,8 +3,9 @@
 namespace Hshn\SerializerExtraBundle\Authority;
 
 
+use Hshn\SerializerExtraBundle\AbstractContextAwareEventSubscriber;
+use Hshn\SerializerExtraBundle\ContextMatcher\MatcherFactory;
 use JMS\Serializer\EventDispatcher\Events;
-use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\EventDispatcher\ObjectEvent;
 use JMS\Serializer\JsonSerializationVisitor;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
@@ -13,7 +14,7 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 /**
  * @author Shota Hoshino <lga0503@gmail.com>
  */
-class EventSubscriber implements EventSubscriberInterface
+class EventSubscriber extends AbstractContextAwareEventSubscriber
 {
     /**
      * @var AuthorizationCheckerInterface
@@ -31,12 +32,15 @@ class EventSubscriber implements EventSubscriberInterface
     private $exportTo;
 
     /**
+     * @param MatcherFactory                $matcherFactory
      * @param AuthorizationCheckerInterface $authorizationChecker
      * @param ConfigurationRepository       $configurationRepository
      * @param string                        $exportTo
      */
-    public function __construct(AuthorizationCheckerInterface $authorizationChecker, ConfigurationRepository $configurationRepository, $exportTo = '_roles')
+    public function __construct(MatcherFactory $matcherFactory, AuthorizationCheckerInterface $authorizationChecker, ConfigurationRepository $configurationRepository, $exportTo = '_roles')
     {
+        parent::__construct($matcherFactory);
+
         $this->authorizationChecker = $authorizationChecker;
         $this->configurationRepository = $configurationRepository;
         $this->exportTo = $exportTo;
@@ -51,10 +55,8 @@ class EventSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $maxDepth = $configuration->getMaxDepth();
         $context = $event->getContext();
-
-        if (-1 !== $maxDepth && $maxDepth < $context->getDepth()) {
+        if (!$this->buildContextMatcher($configuration)->matches($context)) {
             return;
         }
 
@@ -84,6 +86,16 @@ class EventSubscriber implements EventSubscriberInterface
         } catch (\InvalidArgumentException $e) {
             return null;
         }
+    }
+
+    /**
+     * @param Configuration $configuration
+     *
+     * @return \Hshn\SerializerExtraBundle\ContextMatcher\MatcherInterface
+     */
+    private function buildContextMatcher(Configuration $configuration)
+    {
+        return $this->matcherFactory->depth($configuration->getMaxDepth());
     }
 
     /**
