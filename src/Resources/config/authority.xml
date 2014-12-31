@@ -6,7 +6,7 @@
     <services>
         <service id="hshn.serializer_extra.authority.configuration" class="Hshn\SerializerExtraBundle\Authority\Configuration" abstract="true" public="false" />
         <service id="hshn.serializer_extra.authority.configuration_repository" class="Hshn\SerializerExtraBundle\Authority\ConfigurationRepository" public="false" />
-        <service id="hshn.serializer_extra.authority.event_subscriber.def" class="Hshn\SerializerExtraBundle\Authority\EventSubscriber" abstract="true">
+        <service id="hshn.serializer_extra.authority.event_subscriber.def" class="Hshn\SerializerExtraBundle\Authority\EventSubscriber" parent="hshn.serilaizer_extra.event_subscriber.abstract_context_aware" abstract="true">
             <argument type="service" id="security.authorization_checker" />
             <argument type="service" id="hshn.serializer_extra.authority.configuration_repository" />
         </service>

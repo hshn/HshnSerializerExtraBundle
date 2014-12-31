@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\SecurityBundle\SecurityBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\HttpKernel\Kernel;
+use Vich\UploaderBundle\VichUploaderBundle;
 
 /**
  * @author Shota Hoshino <lga0503@gmail.com>
@@ -24,6 +25,7 @@ class TestKernel extends Kernel
             new FrameworkBundle(),
             new JMSSerializerBundle(),
             new SecurityBundle(),
+            new VichUploaderBundle(),
             new HshnSerializerExtraBundle(),
             new HshnSerializerExtraTestBundle(),
         ];

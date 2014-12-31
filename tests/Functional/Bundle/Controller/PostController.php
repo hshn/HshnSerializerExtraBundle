@@ -4,8 +4,6 @@ namespace Hshn\SerializerExtraBundle\Functional\Bundle\Controller;
 
 use Hshn\SerializerExtraBundle\Functional\Bundle\Entity\Post;
 use Hshn\SerializerExtraBundle\Functional\Bundle\Entity\User;
-use JMS\Serializer\Serializer;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -34,19 +32,5 @@ class PostController extends Controller
         $user->addPost(new Post('post 2'));
 
         return new Response($this->serialize($user));
-    }
-
-    /**
-     * @param mixed  $data
-     * @param string $format
-     *
-     * @return mixed
-     */
-    private function serialize($data, $format = 'json')
-    {
-        /** @var $serializer Serializer */
-        $serializer = $this->get('serializer');
-
-        return $serializer->serialize($data, $format);
     }
 }

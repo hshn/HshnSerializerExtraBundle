@@ -5,3 +5,7 @@ post_show:
 post_list:
     path:      /post/list
     defaults:  { _controller: HshnSerializerExtraTestBundle:Post:list }
+
+picture_show:
+    path:      /picture/show
+    defaults:  { _controller: HshnSerializerExtraTestBundle:Picture:show }
