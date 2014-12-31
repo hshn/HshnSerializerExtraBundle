@@ -18,6 +18,9 @@
         "jms/serializer-bundle": "*",
         "vich/uploader-bundle": "~0.10"
     },
+    "suggest": {
+        "vich/uploader-bundle": "~0.10"
+    },
     "autoload": {
         "psr-4": { "Hshn\\SerializerExtraBundle\\": "src" }
     },
