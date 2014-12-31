@@ -8,8 +8,6 @@ use Hshn\SerializerExtraBundle\ContextMatcher\MatcherFactory;
 use JMS\Serializer\EventDispatcher\Events;
 use JMS\Serializer\EventDispatcher\ObjectEvent;
 use JMS\Serializer\JsonSerializationVisitor;
-use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
-
 
 /**
  * @author Shota Hoshino <lga0503@gmail.com>

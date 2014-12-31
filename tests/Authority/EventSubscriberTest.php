@@ -2,6 +2,7 @@
 
 
 namespace Hshn\SerializerExtraBundle\Authority;
+
 use Hshn\SerializerExtraBundle\ContextMatcher\MatcherFactory;
 
 
@@ -29,7 +30,7 @@ class EventSubscriberTest extends \PHPUnit_Framework_TestCase
     {
         $this->subscriber = new EventSubscriber(
             new MatcherFactory(),
-            $this->authorizationChecker = $this->getMock('Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface'),
+            $this->authorizationChecker = $this->getMock('Hshn\SerializerExtraBundle\Authority\AuthorizationCheckerInterface'),
             $this->configurationRepository = $this->getMockBuilder('Hshn\SerializerExtraBundle\Authority\ConfigurationRepository')->getMock()
         );
     }
