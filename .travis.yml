@@ -9,8 +9,14 @@ php:
   - 5.6
   - hhvm
 
+env:
+  - SYMFONY_VERSION=2.4.*
+  - SYMFONY_VERSION=2.5.*
+  - SYMFONY_VERSION=2.6.*
+
 before_script:
   - npm install
+  - composer require symfony/framework-bundle:${SYMFONY_VERSION} symfony/security-bundle:${SYMFONY_VERSION} --prefer-source
   - composer install --dev --prefer-source
 
 script: gulp test
