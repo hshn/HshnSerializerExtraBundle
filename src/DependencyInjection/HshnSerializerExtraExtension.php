@@ -63,6 +63,10 @@ class HshnSerializerExtraExtension extends Extension
         $roleSubscriber->addTag('jms_serializer.event_subscriber');
 
         $container->setDefinition('hshn.serializer_extra.authority.event_subscriber', $roleSubscriber);
+
+        $authorizationChecker = class_exists('Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface') ? 'default' : 'security_context';
+
+        $container->setAlias('hshn.serializer_extra.authority.authorization_checker', sprintf('hshn.serializer_extra.authority.authorization_checker.%s', $authorizationChecker));
     }
 
     /**
