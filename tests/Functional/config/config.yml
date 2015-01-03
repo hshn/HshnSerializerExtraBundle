@@ -27,21 +27,3 @@ vich_uploader:
             uri_prefix: /images
             upload_destination: %kernel.cache_dir%/images
             namer: vich_uploader.namer_uniqid
-
-hshn_serializer_extra:
-    authority:
-        classes:
-            Hshn\SerializerExtraBundle\Functional\Bundle\Entity\Post:
-                attributes: OWNER
-                max_depth: 0
-    vich_uploader:
-        classes:
-            Hshn\SerializerExtraBundle\Functional\Bundle\Entity\Picture:
-                files:
-                    - { property: file, export_to: file_url }
-
-services:
-    post_voter:
-        class: Hshn\SerializerExtraBundle\Functional\Bundle\Security\Voter\PostVoter
-        tags:
-            - { name: security.voter }

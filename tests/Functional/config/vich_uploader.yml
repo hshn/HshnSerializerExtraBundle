@@ -1,0 +1,9 @@
+imports:
+    - { resource: config.yml }
+
+hshn_serializer_extra:
+    vich_uploader:
+        classes:
+            Hshn\SerializerExtraBundle\Functional\Bundle\Entity\Picture:
+                files:
+                    - { property: file, export_to: file_url }

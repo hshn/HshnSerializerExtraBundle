@@ -9,6 +9,14 @@ namespace Hshn\SerializerExtraBundle\Functional;
  */
 class VichUploaderTest extends WebTestCase
 {
+    /**
+     * {@inheritdoc}
+     */
+    public static function getConfiguration()
+    {
+        return 'vich_uploader';
+    }
+
     public function test()
     {
         $client = $this->createClient();

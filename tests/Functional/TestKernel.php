@@ -8,6 +8,7 @@ use JMS\SerializerBundle\JMSSerializerBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\SecurityBundle\SecurityBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
+use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\HttpKernel\Kernel;
 use Vich\UploaderBundle\VichUploaderBundle;
 
@@ -16,6 +17,20 @@ use Vich\UploaderBundle\VichUploaderBundle;
  */
 class TestKernel extends Kernel
 {
+    /**
+     * @var string
+     */
+    private $config;
+
+    /**
+     * @param string $config
+     */
+    public function __construct($config)
+    {
+        $this->config = $config;
+        parent::__construct('test', true);
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -36,6 +51,32 @@ class TestKernel extends Kernel
      */
     public function registerContainerConfiguration(LoaderInterface $loader)
     {
-        $loader->load(__DIR__.'/config/config.yml');
+        $loader->load(__DIR__.'/config/'.$this->config.'.yml');
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getName()
+    {
+        return parent::getName().Container::camelize($this->config).str_replace('.', '', Kernel::VERSION);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function serialize()
+    {
+        return $this->config;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function unserialize($config)
+    {
+        $this->__construct($config);
+    }
+
+
 }
