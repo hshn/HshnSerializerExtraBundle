@@ -159,7 +159,7 @@ class HshnSerializerExtraExtensionTest extends \PHPUnit_Framework_TestCase
         ]);
 
         $alias = $this->container->getAlias('hshn.serializer_extra.vich_uploader.uri_resolver');
-        $this->assertEquals('hshn.serializer_extra.vich_uploader.uri_resolver.imagine_filter', (string) $alias);
+        $this->assertEquals('hshn.serializer_extra.vich_uploader.uri_resolver.apply_filter', (string) $alias);
 
         $this->container->hasDefinition('hshn.serializer_extra.vich_uploader.configuration_repository');
         $definition = $this->container->getDefinition('hshn.serializer_extra.vich_uploader.configuration_repository');

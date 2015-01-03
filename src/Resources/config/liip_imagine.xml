@@ -5,14 +5,8 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
         <service id="hshn.serializer_extra.vich_uploader.uri_resolver.apply_filter" class="Hshn\SerializerExtraBundle\VichUploader\UriResolver\ApplyFilterResolver" public="false">
-            <argument type="service" id="vich_uploader.storage" />
+            <argument type="service" id="hshn.serializer_extra.vich_uploader.uri_resolver.storage" />
             <argument type="service" id="liip_imagine.cache.manager" />
-        </service>
-        <service id="hshn.serializer_extra.vich_uploader.uri_resolver.imagine_filter" class="Hshn\SerializerExtraBundle\VichUploader\UriResolver\ChainResolver" public="false">
-            <argument type="collection">
-                <argument type="service" id="hshn.serializer_extra.vich_uploader.uri_resolver.apply_filter" />
-                <argument type="service" id="hshn.serializer_extra.vich_uploader.uri_resolver.storage" />
-            </argument>
         </service>
     </services>
 </container>

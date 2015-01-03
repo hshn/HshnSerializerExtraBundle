@@ -130,7 +130,7 @@ class HshnSerializerExtraExtension extends Extension
         $this->ensureBundleEnabled($container, 'LiipImagineBundle');
         $loader->load('liip_imagine.xml');
 
-        $container->setAlias('hshn.serializer_extra.vich_uploader.uri_resolver', 'hshn.serializer_extra.vich_uploader.uri_resolver.imagine_filter');
+        $container->setAlias('hshn.serializer_extra.vich_uploader.uri_resolver', 'hshn.serializer_extra.vich_uploader.uri_resolver.apply_filter');
     }
 
 
