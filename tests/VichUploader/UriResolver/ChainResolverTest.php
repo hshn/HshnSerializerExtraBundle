@@ -110,7 +110,7 @@ class ChainResolverTest extends \PHPUnit_Framework_TestCase
      */
     private function getException()
     {
-        return $this->getMock('Hshn\SerializerExtraBundle\VichUploader\UriResolverException');
+        return $this->getMock('Hshn\SerializerExtraBundle\VichUploader\UriResolverException', ['getMessage']);
     }
 
     /**

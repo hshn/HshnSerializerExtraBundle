@@ -143,7 +143,7 @@ class EventSubscriberTest extends \PHPUnit_Framework_TestCase
             ->method('resolve')
             ->with($this->identicalTo($object), call_user_func_array([$this, 'logicalOr'], $files), $class)
             ->will($this->onConsecutiveCalls(
-                $this->throwException($this->getMock('Hshn\SerializerExtraBundle\VichUploader\UriResolverException')),
+                $this->throwException($this->getMock('Hshn\SerializerExtraBundle\VichUploader\UriResolverException', ['getMessage'])),
                 'http://foo',
                 'http://bar'
             ));
