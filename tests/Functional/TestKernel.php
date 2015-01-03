@@ -5,6 +5,7 @@ namespace Hshn\SerializerExtraBundle\Functional;
 use Hshn\SerializerExtraBundle\Functional\Bundle\HshnSerializerExtraTestBundle;
 use Hshn\SerializerExtraBundle\HshnSerializerExtraBundle;
 use JMS\SerializerBundle\JMSSerializerBundle;
+use Liip\ImagineBundle\LiipImagineBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\SecurityBundle\SecurityBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
@@ -41,6 +42,7 @@ class TestKernel extends Kernel
             new JMSSerializerBundle(),
             new SecurityBundle(),
             new VichUploaderBundle(),
+            new LiipImagineBundle(),
             new HshnSerializerExtraBundle(),
             new HshnSerializerExtraTestBundle(),
         ];

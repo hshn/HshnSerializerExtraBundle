@@ -2,7 +2,7 @@ framework:
     test: ~
     secret: secret
     router:
-        resource: "%kernel.root_dir%/config/routing.yml"
+        resource: "%kernel.root_dir%/config/routing/default.yml"
 
 security:
     providers:

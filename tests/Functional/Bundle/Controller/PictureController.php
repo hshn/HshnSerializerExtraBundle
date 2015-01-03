@@ -16,9 +16,9 @@ class PictureController extends Controller
     public function showAction()
     {
         $temp = tempnam(sys_get_temp_dir(), md5(__CLASS__));
-        file_put_contents($temp, file_get_contents(__FILE__));
+        file_put_contents($temp, file_get_contents(__DIR__.'/../Resources/images/symfony.png'));
 
-        $picture = new Picture(new UploadedFile($temp, 'PictureController.php', null, null, UPLOAD_ERR_OK, true));
+        $picture = new Picture(new UploadedFile($temp, 'symfony.png', null, null, UPLOAD_ERR_OK, true));
 
         $this->getUploadHandler()->upload($picture, 'file');
 

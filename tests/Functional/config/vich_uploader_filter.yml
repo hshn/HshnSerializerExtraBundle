@@ -1,0 +1,31 @@
+imports:
+    - { resource: config.yml }
+
+framework:
+    router:
+        resource: "%kernel.root_dir%/config/routing/vich_uploader_filter.yml"
+
+liip_imagine:
+    resolvers:
+        default:
+            web_path:
+                web_root: %kernel.cache_dir%
+
+    loaders:
+        default:
+            filesystem:
+                data_root: %kernel.cache_dir%
+
+    filter_sets:
+        thumb:
+            quality: 75
+            filters:
+                thumbnail: { size: [120, 90], mode: outbound }
+
+hshn_serializer_extra:
+    vich_uploader:
+        classes:
+            Hshn\SerializerExtraBundle\Functional\Bundle\Entity\Picture:
+                files:
+                    - { property: file, export_to: file_url }
+                    - { property: file, export_to: thumb_url, filter: thumb }
