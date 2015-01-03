@@ -99,21 +99,80 @@ class HshnSerializerExtraExtensionTest extends \PHPUnit_Framework_TestCase
         $this->loadExtension([
             'vich_uploader' => [
                 'classes' => [
-                    'MyClass_A' => [
-                        'attributes' => [
-                            'foo' => 'bar',
-                            'name' => null,
+                    'Foo' => [
+                        'files' => [
+                            ['property' => 'foo', 'export_to' => 'bar'],
+                            ['property' => 'foo', 'filter' => 'baz']
                         ],
                         'max_depth' => 1,
                     ],
-                    'MyClass_B' => null,
+                    'Bar' => [
+                        'files' => [
+                            ['property' => 'foo']
+                        ],
+                    ],
                 ],
             ]
         ]);
 
         $this->container->hasDefinition('hshn.serializer_extra.vich_uploader.configuration_repository');
         $definition = $this->container->getDefinition('hshn.serializer_extra.vich_uploader.configuration_repository');
-        $this->assertCount(2, $definition->getArgument(0));
+        $this->assertCount(2, $configurations = $definition->getArgument(0));
+
+        $this->assertVichUploaderConfig($configurations[0], 'Foo', [
+            $this->isFileConfiguration('foo', 'bar'),
+            $this->isFileConfiguration('foo', null, 'baz')
+        ], 1);
+
+        $this->assertVichUploaderConfig($configurations[1], 'Bar', [
+            $this->isFileConfiguration('foo')
+        ]);
+    }
+
+    /**
+     * @param Reference                       $reference
+     * @param string                          $expectedClass
+     * @param \PHPUnit_Framework_Constraint[] $expectedFiles
+     * @param int                             $expectedMaxDepth
+     * @param string                          $message
+     */
+    private function assertVichUploaderConfig(Reference $reference, $expectedClass, array $expectedFiles = [], $expectedMaxDepth = -1, $message = '')
+    {
+        $id = (string) $reference;
+        $this->assertRegExp('/^hshn\.serializer_extra\.vich_uploader\.configuration\.\w+$/', $id, $message);
+
+        $definition = $this->container->getDefinition($id);
+        $this->assertEquals($expectedClass, $definition->getArgument(0), $message);
+        $this->assertCount(count($expectedFiles), $files = $definition->getArgument(1));
+        foreach ($files as $i => $file) {
+            $this->assertThat($file, $expectedFiles[$i], $message);
+        }
+        $this->assertEquals($expectedMaxDepth, $definition->getArgument(2));
+    }
+
+    /**
+     * @param string $property
+     * @param string $exportTo
+     * @param string $filter
+     *
+     * @return \PHPUnit_Framework_Constraint
+     */
+    private function isFileConfiguration($property, $exportTo = null, $filter = null)
+    {
+        return $this->logicalAnd(
+            $this->isInstanceOf('Symfony\Component\DependencyInjection\Reference'),
+            $this->callback(function (Reference $reference) use ($property, $exportTo, $filter) {
+                $id = (string) $reference;
+                $this->assertRegExp('/^hshn\.serializer_extra\.vich_uploader\.configuration\.\w+\.file\d+$/', $id);
+
+                $definition = $this->container->getDefinition($id);
+                $this->assertEquals($property, $definition->getArgument(0));
+                $this->assertEquals($exportTo, $definition->getArgument(1));
+                $this->assertEquals($filter, $definition->getArgument(2));
+
+                return true;
+            })
+        );
     }
 
     /**

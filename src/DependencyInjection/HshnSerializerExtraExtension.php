@@ -83,16 +83,36 @@ class HshnSerializerExtraExtension extends Extension
         $configurations = [];
         foreach ($config['classes'] as $class => $vars) {
             $id = sprintf('hshn.serializer_extra.vich_uploader.configuration.%s', md5($class));
-            $container->setDefinition($id, $definition = new DefinitionDecorator('hshn.serializer_extra.vich_uploader.configuration'));
-            $definition
-                ->addArgument($class)
-                ->addArgument($vars['attributes'])
-                ->addArgument($vars['max_depth']);
+
+            $definition = new DefinitionDecorator('hshn.serializer_extra.vich_uploader.configuration');
+            $definition->setArguments([$class, $this->createVichUploaderFileConfig($container, $id, $vars['files']), $vars['max_depth']]);
+            $container->setDefinition($id, $definition);
 
             $configurations[] = new Reference($id);
         }
 
         $container->getDefinition('hshn.serializer_extra.vich_uploader.configuration_repository')->addArgument($configurations);
+    }
+
+    /**
+     * @param ContainerBuilder $container
+     * @param string           $prefix
+     * @param array            $files
+     *
+     * @return Reference[]
+     */
+    private function createVichUploaderFileConfig(ContainerBuilder $container, $prefix, array $files)
+    {
+        $references = [];
+        foreach ($files as $i => $file) {
+            $id = "{$prefix}.file{$i}";
+            $container->setDefinition($id, $definition = new DefinitionDecorator('hshn.serializer_extra.vich_uploader.configuration.file'));
+            $definition->setArguments([$file['property'], $file['export_to'], $file['filter']]);
+
+            $references[] = new Reference($id);
+        }
+
+        return $references;
     }
 
     /**

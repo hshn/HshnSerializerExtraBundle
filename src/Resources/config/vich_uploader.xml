@@ -6,6 +6,7 @@
     <services>
         <service id="hshn.serializer_extra.vich_uploader.configuration_repository" class="Hshn\SerializerExtraBundle\VichUploader\ConfigurationRepository" />
         <service id="hshn.serializer_extra.vich_uploader.configuration" class="Hshn\SerializerExtraBundle\VichUploader\Configuration" abstract="true" />
+        <service id="hshn.serializer_extra.vich_uploader.configuration.file" class="Hshn\SerializerExtraBundle\VichUploader\Configuration\File" abstract="true" />
         <service id="hshn.serializer_extra.vich_uploader.event_subscriber" class="Hshn\SerializerExtraBundle\VichUploader\EventSubscriber" parent="hshn.serilaizer_extra.event_subscriber.abstract_context_aware">
             <argument type="service" id="vich_uploader.property_mapping_factory" />
             <argument type="service" id="vich_uploader.storage" />
