@@ -92,10 +92,53 @@ class HshnSerializerExtraExtensionTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @expectedException \RuntimeException
+     * @expectedExceptionMessage LiipImagineBundle
+     */
+    public function testThrowsExceptionWhenUsingFiltersUnlessLiipImagineBundleIsEnabled()
+    {
+        $this->enableBundle(['VichUploaderBundle']);
+        $this->loadExtension([
+            'vich_uploader' => [
+                'classes' => [
+                    'Foo' => [
+                        'files' => [
+                            ['property' => 'bar', 'filter' => 'baz'],
+                        ],
+                    ],
+                ],
+            ],
+        ]);
+    }
+
+    /**
+     * @test
+     */
+    public function testVichUploaderConfigsWithoutFilter()
+    {
+        $this->enableBundle(['VichUploaderBundle']);
+        $this->loadExtension([
+            'vich_uploader' => [
+                'classes' => [
+                    'Foo' => [
+                        'files' => [
+                            ['property' => 'bar'],
+                        ],
+                    ],
+                ],
+            ],
+        ]);
+
+        $alias = $this->container->getAlias('hshn.serializer_extra.vich_uploader.uri_resolver');
+        $this->assertEquals('hshn.serializer_extra.vich_uploader.uri_resolver.storage', (string) $alias);
+    }
+
+    /**
+     * @test
      */
     public function testVichUploaderConfigs()
     {
-        $this->enableBundle(['VichUploaderBundle']);
+        $this->enableBundle(['VichUploaderBundle', 'LiipImagineBundle']);
         $this->loadExtension([
             'vich_uploader' => [
                 'classes' => [
@@ -114,6 +157,9 @@ class HshnSerializerExtraExtensionTest extends \PHPUnit_Framework_TestCase
                 ],
             ]
         ]);
+
+        $alias = $this->container->getAlias('hshn.serializer_extra.vich_uploader.uri_resolver');
+        $this->assertEquals('hshn.serializer_extra.vich_uploader.uri_resolver.imagine_filter', (string) $alias);
 
         $this->container->hasDefinition('hshn.serializer_extra.vich_uploader.configuration_repository');
         $definition = $this->container->getDefinition('hshn.serializer_extra.vich_uploader.configuration_repository');
@@ -147,6 +193,7 @@ class HshnSerializerExtraExtensionTest extends \PHPUnit_Framework_TestCase
         foreach ($files as $i => $file) {
             $this->assertThat($file, $expectedFiles[$i], $message);
         }
+
         $this->assertEquals($expectedMaxDepth, $definition->getArgument(2));
     }
 

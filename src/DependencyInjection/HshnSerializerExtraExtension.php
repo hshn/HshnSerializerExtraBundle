@@ -2,13 +2,13 @@
 
 namespace Hshn\SerializerExtraBundle\DependencyInjection;
 
+use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\DefinitionDecorator;
+use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
-use Symfony\Component\DependencyInjection\Loader;
 
 /**
  * This is the class that loads and manages your bundle configuration
@@ -77,31 +77,36 @@ class HshnSerializerExtraExtension extends Extension
     private function loadVichUploader(ContainerBuilder $container, LoaderInterface $loader, array $config)
     {
         $this->ensureBundleEnabled($container, 'VichUploaderBundle');
-
         $loader->load('vich_uploader.xml');
 
+        $isFilterSpecified = false;
         $configurations = [];
         foreach ($config['classes'] as $class => $vars) {
             $id = sprintf('hshn.serializer_extra.vich_uploader.configuration.%s', md5($class));
 
             $definition = new DefinitionDecorator('hshn.serializer_extra.vich_uploader.configuration');
-            $definition->setArguments([$class, $this->createVichUploaderFileConfig($container, $id, $vars['files']), $vars['max_depth']]);
+            $definition->setArguments([$class, $this->createVichUploaderFileConfig($container, $id, $vars['files'], $isFilterSpecified), $vars['max_depth']]);
             $container->setDefinition($id, $definition);
 
             $configurations[] = new Reference($id);
         }
 
         $container->getDefinition('hshn.serializer_extra.vich_uploader.configuration_repository')->addArgument($configurations);
+
+        if ($isFilterSpecified) {
+            $this->loadLiipImagineFilter($container, $loader);
+        }
     }
 
     /**
      * @param ContainerBuilder $container
      * @param string           $prefix
      * @param array            $files
+     * @param bool             $isFilterSpecified
      *
-     * @return Reference[]
+     * @return \Symfony\Component\DependencyInjection\Reference[]
      */
-    private function createVichUploaderFileConfig(ContainerBuilder $container, $prefix, array $files)
+    private function createVichUploaderFileConfig(ContainerBuilder $container, $prefix, array $files, &$isFilterSpecified)
     {
         $references = [];
         foreach ($files as $i => $file) {
@@ -110,10 +115,24 @@ class HshnSerializerExtraExtension extends Extension
             $definition->setArguments([$file['property'], $file['export_to'], $file['filter']]);
 
             $references[] = new Reference($id);
+            $isFilterSpecified = $isFilterSpecified || $file['filter'] !== null;
         }
 
         return $references;
     }
+
+    /**
+     * @param ContainerBuilder $container
+     * @param LoaderInterface  $loader
+     */
+    private function loadLiipImagineFilter(ContainerBuilder $container, LoaderInterface $loader)
+    {
+        $this->ensureBundleEnabled($container, 'LiipImagineBundle');
+        $loader->load('liip_imagine.xml');
+
+        $container->setAlias('hshn.serializer_extra.vich_uploader.uri_resolver', 'hshn.serializer_extra.vich_uploader.uri_resolver.imagine_filter');
+    }
+
 
     /**
      * @param ContainerBuilder $container

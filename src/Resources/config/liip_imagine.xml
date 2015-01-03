@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <service id="hshn.serializer_extra.vich_uploader.uri_resolver.apply_filter" class="Hshn\SerializerExtraBundle\VichUploader\UriResolver\StorageResolver" public="false">
+            <argument type="service" id="vich_uploader.storage" />
+            <argument type="service" id="liip_imagine.cache.manager" />
+        </service>
+        <service id="hshn.serializer_extra.vich_uploader.uri_resolver.imagine_filter" class="Hshn\SerializerExtraBundle\VichUploader\UriResolver\ChainResolver" public="false">
+            <argument type="service" id="hshn.serializer_extra.vich_uploader.uri_resolver.storage" />
+            <argument type="service" id="hshn.serializer_extra.vich_uploader.uri_resolver.apply_filter" />
+        </service>
+    </services>
+</container>
