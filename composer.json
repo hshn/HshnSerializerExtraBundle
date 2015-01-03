@@ -16,10 +16,12 @@
         "symfony/browser-kit": "*",
         "jms/serializer": "*",
         "jms/serializer-bundle": "*",
-        "vich/uploader-bundle": "~0.10"
+        "vich/uploader-bundle": "~0.10",
+        "liip/imagine-bundle": "~1.0"
     },
     "suggest": {
-        "vich/uploader-bundle": "~0.10"
+        "vich/uploader-bundle": "~0.10",
+        "liip/imagine-bundle": "to apply a filter to uploaded images before serializing a file as an uri"
     },
     "autoload": {
         "psr-4": { "Hshn\\SerializerExtraBundle\\": "src" }
