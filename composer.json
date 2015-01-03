@@ -20,7 +20,7 @@
         "liip/imagine-bundle": "~1.0"
     },
     "suggest": {
-        "vich/uploader-bundle": "~0.10",
+        "vich/uploader-bundle": "to serialize uploaded files as an uri",
         "liip/imagine-bundle": "to apply a filter to uploaded images before serializing a file as an uri"
     },
     "autoload": {
