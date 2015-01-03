@@ -3,6 +3,7 @@
 namespace Hshn\SerializerExtraBundle\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
 use Symfony\Component\DependencyInjection\Reference;
 
 /**
@@ -79,9 +80,22 @@ class HshnSerializerExtraExtensionTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @expectedException \RuntimeException
+     * @expectedExceptionMessage VichUploaderBundle
+     */
+    public function testThrowExceptionUnlessVichUploaderBundleIsEnabled()
+    {
+        $this->loadExtension([
+            'vich_uploader' => []
+        ]);
+    }
+
+    /**
+     * @test
      */
     public function testVichUploaderConfigs()
     {
+        $this->enableBundle(['VichUploaderBundle']);
         $this->loadExtension([
             'vich_uploader' => [
                 'classes' => [
@@ -103,10 +117,29 @@ class HshnSerializerExtraExtensionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @param array $bundles
+     */
+    private function enableBundle(array $bundles)
+    {
+        $enabledBundles = [];
+        try {
+            $enabledBundles = $this->container->getParameter('kernel.bundles');
+        } catch (InvalidArgumentException $e) {
+        }
+
+        foreach ($bundles as $bundle) {
+            $enabledBundles[$bundle] = true;
+        }
+
+        $this->container->setParameter('kernel.bundles', $enabledBundles);
+    }
+
+    /**
      * @param array $config
      */
     private function loadExtension(array $config)
     {
+        $this->enableBundle([]);
         $this->extension->load([
             'hshn_serializer_extra' => $config
         ], $this->container);

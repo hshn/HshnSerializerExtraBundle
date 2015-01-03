@@ -76,6 +76,8 @@ class HshnSerializerExtraExtension extends Extension
      */
     private function loadVichUploader(ContainerBuilder $container, LoaderInterface $loader, array $config)
     {
+        $this->ensureBundleEnabled($container, 'VichUploaderBundle');
+
         $loader->load('vich_uploader.xml');
 
         $configurations = [];
@@ -91,5 +93,17 @@ class HshnSerializerExtraExtension extends Extension
         }
 
         $container->getDefinition('hshn.serializer_extra.vich_uploader.configuration_repository')->addArgument($configurations);
+    }
+
+    /**
+     * @param ContainerBuilder $container
+     * @param string           $bundle
+     */
+    private function ensureBundleEnabled(ContainerBuilder $container, $bundle)
+    {
+        $bundles = $container->getParameter('kernel.bundles');
+        if (!isset($bundles[$bundle])) {
+            throw new \RuntimeException(sprintf('The HshnSerializerExtraBundle requires the %s to enable integration of it, please make sure to enable it in your AppKernel', $bundle));
+        }
     }
 }
