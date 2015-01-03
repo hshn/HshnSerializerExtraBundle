@@ -26,4 +26,3 @@ vich_uploader:
         picture:
             uri_prefix: /images
             upload_destination: %kernel.cache_dir%/images
-            namer: vich_uploader.namer_uniqid

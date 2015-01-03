@@ -31,6 +31,6 @@ class VichUploaderTest extends WebTestCase
         $content = json_decode($content, true);
         $this->assertArrayHasKey('name', $content);
         $this->assertArrayHasKey('file_url', $content);
-        $this->assertRegExp('/\/images\/[^\/]+\.php/', $content['file_url']);
+        $this->assertEquals('/images/symfony.png', $content['file_url']);
     }
 }
