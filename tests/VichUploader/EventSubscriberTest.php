@@ -3,7 +3,7 @@
 
 namespace Hshn\SerializerExtraBundle\VichUploader;
 
-
+use Hshn\SerializerExtraBundle\VichUploader\Configuration\File;
 
 /**
  * @author Shota Hoshino <lga0503@gmail.com>
@@ -28,20 +28,20 @@ class EventSubscriberTest extends \PHPUnit_Framework_TestCase
     /**
      * @var \PHPUnit_Framework_MockObject_MockObject
      */
-    private $storage;
+    private $configurationRepository;
 
     /**
      * @var \PHPUnit_Framework_MockObject_MockObject
      */
-    private $configurationRepository;
+    private $uriResolver;
 
     protected function setUp()
     {
         $this->subscriber = new EventSubscriber(
             $this->matcherFactory = $this->getMock('Hshn\SerializerExtraBundle\ContextMatcher\MatcherFactory'),
             $this->mappingFactory = $this->getMockBuilder('Vich\UploaderBundle\Mapping\PropertyMappingFactory')->disableOriginalConstructor()->getMock(),
-            $this->storage = $this->getMock('Vich\UploaderBundle\Storage\StorageInterface'),
-            $this->configurationRepository = $this->getMockBuilder('Hshn\SerializerExtraBundle\VichUploader\ConfigurationRepository')->disableOriginalConstructor()->getMock()
+            $this->configurationRepository = $this->getMockBuilder('Hshn\SerializerExtraBundle\VichUploader\ConfigurationRepository')->disableOriginalConstructor()->getMock(),
+            $this->uriResolver = $this->getMock('Hshn\SerializerExtraBundle\VichUploader\UriResolverInterface')
         );
     }
 
@@ -95,7 +95,7 @@ class EventSubscriberTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function testExportUsingAttributes()
+    public function testExportUsingFiles()
     {
         $event = $this->getObjectEvent('mocked type');
 
@@ -130,18 +130,23 @@ class EventSubscriberTest extends \PHPUnit_Framework_TestCase
 
         $configuration
             ->expects($this->once())
-            ->method('getAttributes')
-            ->will($this->returnValue([
-                'foo' => 'bar',
-                'bar' => 'baz',
+            ->method('getFiles')
+            ->will($this->returnValue($files = [
+                $this->getFile('foo'),
+                $this->getFile('bar'),
+                $this->getFile('baz'),
             ]));
 
         $this
-            ->storage
-            ->expects($this->exactly(2))
-            ->method('resolveUri')
-            ->with($this->identicalTo($object), $this->logicalOr('foo', 'bar'), $class)
-            ->will($this->onConsecutiveCalls('http://foo', 'http://bar'));
+            ->uriResolver
+            ->expects($this->exactly(3))
+            ->method('resolve')
+            ->with($this->identicalTo($object), call_user_func_array([$this, 'logicalOr'], $files), $class)
+            ->will($this->onConsecutiveCalls(
+                $this->throwException($this->getMock('Hshn\SerializerExtraBundle\VichUploader\UriResolverException')),
+                'http://foo',
+                'http://bar'
+            ));
 
         $visitor
             ->expects($this->exactly(2))
@@ -154,7 +159,7 @@ class EventSubscriberTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function testExportUsingNoAttributes()
+    public function testExportUsingNoFiles()
     {
         $event = $this->getObjectEvent('mocked type');
 
@@ -189,7 +194,7 @@ class EventSubscriberTest extends \PHPUnit_Framework_TestCase
 
         $configuration
             ->expects($this->once())
-            ->method('getAttributes')
+            ->method('getFiles')
             ->will($this->returnValue([]));
 
         $this
@@ -203,10 +208,24 @@ class EventSubscriberTest extends \PHPUnit_Framework_TestCase
             ]));
 
         $this
-            ->storage
+            ->uriResolver
             ->expects($this->exactly(2))
-            ->method('resolveUri')
-            ->with($this->identicalTo($object), $this->logicalOr('foo', 'bar'), $class)
+            ->method('resolve')
+            ->with(
+                $this->identicalTo($object),
+                $this->logicalAnd(
+                    $this->isInstanceOf('Hshn\SerializerExtraBundle\VichUploader\Configuration\File'),
+                    $this->callback(function (File $file) {
+
+                        $this->assertThat($file->getExportTo(), $this->logicalOr('foo', 'bar'));
+                        $this->assertThat($file->getProperty(), $this->logicalOr('foo', 'bar'));
+                        $this->assertNull($file->getFilter());
+
+                        return true;
+                    })
+                ),
+                $class
+            )
             ->will($this->onConsecutiveCalls('http://foo', 'http://bar'));
 
         $visitor
@@ -311,5 +330,22 @@ class EventSubscriberTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue(['name' => $type]));
 
         return $event;
+    }
+
+    /**
+     * @param $exportTo
+     *
+     * @return \PHPUnit_Framework_MockObject_MockObject
+     */
+    private function getFile($exportTo)
+    {
+        $file = $this->getMockBuilder('Hshn\SerializerExtraBundle\VichUploader\Configuration\File')->disableOriginalConstructor()->getMock();
+
+        $file
+            ->expects($this->atLeastOnce())
+            ->method('getExportTo')
+            ->will($this->returnValue($exportTo));
+
+        return $file;
     }
 }
