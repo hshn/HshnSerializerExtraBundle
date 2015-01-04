@@ -10,6 +10,14 @@ namespace Hshn\SerializerExtraBundle\Functional;
 class AuthorityTest extends WebTestCase
 {
     /**
+     * {@inheritdoc}
+     */
+    public static function getConfiguration()
+    {
+        return 'authority';
+    }
+
+    /**
      * @test
      * @dataProvider provideTests
      *

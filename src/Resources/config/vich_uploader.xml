@@ -6,10 +6,15 @@
     <services>
         <service id="hshn.serializer_extra.vich_uploader.configuration_repository" class="Hshn\SerializerExtraBundle\VichUploader\ConfigurationRepository" />
         <service id="hshn.serializer_extra.vich_uploader.configuration" class="Hshn\SerializerExtraBundle\VichUploader\Configuration" abstract="true" />
+        <service id="hshn.serializer_extra.vich_uploader.configuration.file" class="Hshn\SerializerExtraBundle\VichUploader\Configuration\File" abstract="true" />
+        <service id="hshn.serializer_extra.vich_uploader.uri_resolver.storage" class="Hshn\SerializerExtraBundle\VichUploader\UriResolver\StorageResolver" public="false">
+            <argument type="service" id="vich_uploader.storage" />
+        </service>
+        <service id="hshn.serializer_extra.vich_uploader.uri_resolver" alias="hshn.serializer_extra.vich_uploader.uri_resolver.storage" />
         <service id="hshn.serializer_extra.vich_uploader.event_subscriber" class="Hshn\SerializerExtraBundle\VichUploader\EventSubscriber" parent="hshn.serilaizer_extra.event_subscriber.abstract_context_aware">
             <argument type="service" id="vich_uploader.property_mapping_factory" />
-            <argument type="service" id="vich_uploader.storage" />
             <argument type="service" id="hshn.serializer_extra.vich_uploader.configuration_repository" />
+            <argument type="service" id="hshn.serializer_extra.vich_uploader.uri_resolver" />
             <tag name="jms_serializer.event_subscriber" />
         </service>
     </services>

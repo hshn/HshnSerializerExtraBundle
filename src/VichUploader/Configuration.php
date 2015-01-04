@@ -2,6 +2,8 @@
 
 namespace Hshn\SerializerExtraBundle\VichUploader;
 
+use Hshn\SerializerExtraBundle\VichUploader\Configuration\File;
+
 /**
  * @author Shota Hoshino <lga0503@gmail.com>
  */
@@ -18,24 +20,22 @@ class Configuration
     private $class;
 
     /**
-     * @var array
+     * @var File[]
      */
-    private $attributes;
+    private $files;
 
     /**
      * @param string $class
-     * @param array  $attributes
+     * @param array  $files
      * @param int    $maxDepth
      */
-    public function __construct($class, array $attributes = [], $maxDepth = -1)
+    public function __construct($class, array $files = [], $maxDepth = -1)
     {
         $this->class = $class;
-        $this->attributes = [];
+        $this->files = [];
         $this->maxDepth = $maxDepth;
 
-        foreach ($attributes as $attribute => $vars) {
-            $this->setAttribute($attribute, $vars['alias']);
-        }
+        $this->addFiles($files);
     }
 
     /**
@@ -55,37 +55,42 @@ class Configuration
     }
 
     /**
-     * @param string $attribute
-     * @param string $alias
+     * @param array $files
      *
-     * @return Configuration
+     * @return $this
      */
-    public function setAttribute($attribute, $alias = null)
+    public function addFiles(array $files)
     {
-        $this->attributes[$attribute] = $alias ?: $attribute;
+        foreach ($files as $file) {
+            $this->addFile($file);
+        }
 
         return $this;
     }
 
     /**
-     * @return array
+     * @param File $file
+     *
+     * @return $this
      */
-    public function getAttributes()
+    public function addFile(File $file)
     {
-        return $this->attributes;
+        foreach ($this->files as $f) {
+            if ($f->getExportTo() === $file->getExportTo()) {
+                throw new \InvalidArgumentException(sprintf('File destination "%s" has already been specified by others', $f->getExportTo()));
+            }
+        }
+
+        $this->files[] = $file;
+
+        return $this;
     }
 
     /**
-     * @param string $attribute
-     *
-     * @return string
+     * @return File[]
      */
-    public function getAlias($attribute)
+    public function getFiles()
     {
-        if (array_key_exists($attribute, $this->attributes)) {
-            return $this->attributes[$attribute];
-        }
-
-        throw new \LogicException('Invalid attribute "%s"');
+        return $this->files;
     }
 }

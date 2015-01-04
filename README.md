@@ -4,7 +4,7 @@ HshnSerializerExtraBundle
 
 This bundle provides some extra features for serialization.
 
-### Exporting authorities of the classes
+### Exporting authorities of objects
 
 ```yaml
 # app/config.yml
@@ -76,4 +76,57 @@ class User
 
 $serializer->serialize($blog, 'json'); // will export the blog authorities (depth 0)
 $serializer->serialize($user, 'json'); // will NOT export the blog authorities (depth 1)
+```
+
+### Export files as URLs
+
+> This feature require [VichUploaderBundle](https://github.com/dustin10/VichUploaderBundle)
+
+```yaml
+# app/config.yml
+hshn_serializer_extra:
+    vich_uploader:
+        classes:
+            AcmeBundle\Entity\Blog:
+                files:
+                    - { property: picture }
+                    - { property: picture, export_to: image }
+```
+
+```php
+/** @var $serializer JMS\Serializer\Serializer */
+$json = $serializer->serialize($blog, 'json');
+```
+
+Generated URLs will be exported when serializing an object.
+
+```json
+{
+    "picture": "/url/to/picture",
+    "image": "/url/to/picture"
+}
+```
+
+### Export images as URLs
+
+> This feature require [LiipImagineBundle](https://github.com/liip/LiipImagineBundle)
+
+Adding a filter name specification to a file configuration.
+
+```yaml
+# app/config.yml
+hshn_serializer_extra:
+    vich_uploader:
+        classes:
+            AcmeBundle\Entity\Blog:
+                files:
+                    - { property: picture }
+                    - { property: picture, export_to: image, filter: thumbnail }
+```
+
+```json
+{
+    "picture": "/url/to/picture",
+    "image": "/url/to/thumbnail/picture"
+}
 ```

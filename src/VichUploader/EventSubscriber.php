@@ -4,12 +4,12 @@ namespace Hshn\SerializerExtraBundle\VichUploader;
 
 use Hshn\SerializerExtraBundle\AbstractContextAwareEventSubscriber;
 use Hshn\SerializerExtraBundle\ContextMatcher\MatcherFactory;
+use Hshn\SerializerExtraBundle\VichUploader\Configuration\File;
 use JMS\Serializer\EventDispatcher\Events;
 use JMS\Serializer\EventDispatcher\ObjectEvent;
 use JMS\Serializer\JsonSerializationVisitor;
 use Vich\UploaderBundle\Mapping\PropertyMapping;
 use Vich\UploaderBundle\Mapping\PropertyMappingFactory;
-use Vich\UploaderBundle\Storage\StorageInterface;
 
 /**
  * @author Shota Hoshino <lga0503@gmail.com>
@@ -32,28 +32,28 @@ class EventSubscriber extends AbstractContextAwareEventSubscriber
     private $propertyMappingFactory;
 
     /**
-     * @var StorageInterface
-     */
-    private $storage;
-
-    /**
      * @var ConfigurationRepository
      */
     private $configurationRepository;
 
     /**
+     * @var UriResolverInterface
+     */
+    private $uriResolver;
+
+    /**
      * @param MatcherFactory          $matcherFactory
      * @param PropertyMappingFactory  $propertyMappingFactory
-     * @param StorageInterface        $storage
      * @param ConfigurationRepository $configurationRepository
+     * @param UriResolverInterface    $uriResolver
      */
-    public function __construct(MatcherFactory $matcherFactory, PropertyMappingFactory $propertyMappingFactory, StorageInterface $storage, ConfigurationRepository $configurationRepository)
+    public function __construct(MatcherFactory $matcherFactory, PropertyMappingFactory $propertyMappingFactory, ConfigurationRepository $configurationRepository, UriResolverInterface $uriResolver)
     {
         parent::__construct($matcherFactory);
 
         $this->propertyMappingFactory = $propertyMappingFactory;
-        $this->storage = $storage;
         $this->configurationRepository = $configurationRepository;
+        $this->uriResolver = $uriResolver;
     }
 
     /**
@@ -73,10 +73,13 @@ class EventSubscriber extends AbstractContextAwareEventSubscriber
         /** @var $visitor JsonSerializationVisitor */
         $visitor = $event->getVisitor();
         $object = $event->getObject();
-        $attributes = $this->getAttributes($configuration, $object);
+        $files = $this->getFiles($configuration, $object);
 
-        foreach ($attributes as $attribute => $alias) {
-            $visitor->addData($alias, $this->storage->resolveUri($object, $attribute, $configuration->getClass()));
+        foreach ($files as $file) {
+            try {
+                $visitor->addData($file->getExportTo(), $this->uriResolver->resolve($object, $file, $configuration->getClass()));
+            } catch (UriResolverException $e) {
+            }
         }
     }
 
@@ -108,21 +111,20 @@ class EventSubscriber extends AbstractContextAwareEventSubscriber
      * @param Configuration $configuration
      * @param object        $object
      *
-     * @return array
+     * @return File[]
      */
-    private function getAttributes(Configuration $configuration, $object)
+    private function getFiles(Configuration $configuration, $object)
     {
-        if ($attributes = $configuration->getAttributes()) {
-            return $attributes;
+        if ($files = $configuration->getFiles()) {
+            return $files;
         }
 
         /** @var $mappings PropertyMapping[] */
         $mappings = $this->propertyMappingFactory->fromObject($object, $configuration->getClass());
         foreach ($mappings as $mapping) {
-            $attribute = $mapping->getFilePropertyName();
-            $attributes[$attribute] = $attribute;
+            $files[] = new File($mapping->getFilePropertyName());
         }
 
-        return $attributes;
+        return $files;
     }
 }
