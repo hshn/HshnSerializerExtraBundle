@@ -5,6 +5,7 @@ namespace Hshn\SerializerExtraBundle\Authority;
 
 use Hshn\SerializerExtraBundle\AbstractContextAwareEventSubscriber;
 use Hshn\SerializerExtraBundle\ContextMatcher\MatcherFactory;
+use Hshn\SerializerExtraBundle\Util\ClassUtils;
 use JMS\Serializer\EventDispatcher\Events;
 use JMS\Serializer\EventDispatcher\ObjectEvent;
 use JMS\Serializer\JsonSerializationVisitor;
@@ -80,7 +81,7 @@ class EventSubscriber extends AbstractContextAwareEventSubscriber
     private function getConfiguration(array $type)
     {
         try {
-            return $this->configurationRepository->get($type['name']);
+            return $this->configurationRepository->get(ClassUtils::getRealClass($type['name']));
         } catch (\InvalidArgumentException $e) {
             return null;
         }

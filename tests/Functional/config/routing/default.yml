@@ -8,4 +8,9 @@ post_list:
 
 picture_show:
     path:      /picture/show
-    defaults:  { _controller: HshnSerializerExtraTestBundle:Picture:show }
+    defaults:  { _controller: HshnSerializerExtraTestBundle:Picture:picture }
+
+picture_show_proxy:
+    path:      /picture/show/proxy
+    defaults:  { _controller: HshnSerializerExtraTestBundle:Picture:pictureProxy }
+
