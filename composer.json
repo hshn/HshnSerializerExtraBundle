@@ -17,7 +17,8 @@
         "jms/serializer": "*",
         "jms/serializer-bundle": "*",
         "vich/uploader-bundle": "~0.10",
-        "liip/imagine-bundle": "~1.0"
+        "liip/imagine-bundle": "~1.0",
+        "doctrine/common": "*"
     },
     "suggest": {
         "vich/uploader-bundle": "to serialize uploaded files as an uri",

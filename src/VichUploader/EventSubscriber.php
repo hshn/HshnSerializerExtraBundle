@@ -4,6 +4,7 @@ namespace Hshn\SerializerExtraBundle\VichUploader;
 
 use Hshn\SerializerExtraBundle\AbstractContextAwareEventSubscriber;
 use Hshn\SerializerExtraBundle\ContextMatcher\MatcherFactory;
+use Hshn\SerializerExtraBundle\Util\ClassUtils;
 use Hshn\SerializerExtraBundle\VichUploader\Configuration\File;
 use JMS\Serializer\EventDispatcher\Events;
 use JMS\Serializer\EventDispatcher\ObjectEvent;
@@ -91,7 +92,7 @@ class EventSubscriber extends AbstractContextAwareEventSubscriber
     private function getConfiguration(array $type)
     {
         try {
-            return $this->configurationRepository->get($type['name']);
+            return $this->configurationRepository->get(ClassUtils::getRealClass($type['name']));
         } catch (\Exception $e) {
             return null;
         }
