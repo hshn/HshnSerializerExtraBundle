@@ -9,13 +9,12 @@
         }
     ],
     "require": {
-        "symfony/framework-bundle": "~2.4"
+        "symfony/framework-bundle": "~2.4",
+        "jms/serializer-bundle": "~0.13"
     },
     "require-dev": {
         "symfony/security-bundle": "~2.4",
         "symfony/browser-kit": "*",
-        "jms/serializer": "*",
-        "jms/serializer-bundle": "*",
         "vich/uploader-bundle": "~0.10",
         "liip/imagine-bundle": "~1.0",
         "doctrine/common": "*"
